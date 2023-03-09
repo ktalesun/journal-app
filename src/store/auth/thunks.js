@@ -1,4 +1,4 @@
-import { loginWithEmailAndPassword, registerWithEmailAndPassword, signInWithGoogle } from '../../firebase/provider'
+import { loginWithEmailAndPassword, logOutFirebase, registerWithEmailAndPassword, signInWithGoogle } from '../../firebase/provider'
 import { checkingCredentials, login, logout } from './authSlice'
 
 export const checkingAuthenticated = (email, password) => {
@@ -34,5 +34,12 @@ export const startLoginWithEmailAndPassword = ({ email, password }) => {
     if (!ok) return dispatch(logout({ errorMessage }))
 
     dispatch(login({ uid, displayName, email, photoURL }))
+  }
+}
+
+export const startLogOutFirebase = () => {
+  return async (dispatch) => {
+    await logOutFirebase()
+    dispatch(logout({}))
   }
 }

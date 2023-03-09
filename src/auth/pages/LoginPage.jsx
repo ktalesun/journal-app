@@ -35,7 +35,10 @@ export const LoginPage = () => {
 
     <AuthLogin title='Login'>
       {/* Contenedor formulario */}
-      <form onSubmit={onSubmit}>
+      <form
+        onSubmit={onSubmit}
+        className='animate__animated animate__fadeIn animate__faster'
+      >
         {/* Contenedor user and password */}
         <Grid container spacing={2} padding={2}>
           <Grid item xs={12}>
