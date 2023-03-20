@@ -3,20 +3,20 @@ import { Grid, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui
 import { useDispatch } from 'react-redux'
 import { setActiveNote } from '../../store/journal/journalSlice'
 
-export const SidebarItem = ({ note }) => {
+export const SidebarItem = ({ title = '', id, body, date, imageUrls = [] }) => {
   const dispatch = useDispatch()
-  const onSetActiveNote = ({ note }) => {
-    dispatch(setActiveNote(note))
+  const onSetActiveNote = () => {
+    dispatch(setActiveNote({ title, id, body, date, imageUrls }))
   }
   return (
-    <ListItem disablePadding onClick={onSetActiveNote(note)}>
-      <ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton onClick={onSetActiveNote}>
         <ListItemIcon>
           <TurnedInNot />
         </ListItemIcon>
         <Grid container>
-          <ListItemText primary={note.title} primaryTypographyProps={{ style: { width: '120px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } }} />
-          <ListItemText secondary={note.body} />
+          <ListItemText primary={title} primaryTypographyProps={{ style: { width: '120px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } }} />
+          <ListItemText secondary={body} />
         </Grid>
       </ListItemButton>
     </ListItem>

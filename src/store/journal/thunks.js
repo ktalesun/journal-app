@@ -1,7 +1,8 @@
-import { collection, doc, setDoc } from 'firebase/firestore/lite'
+import { collection, deleteDoc, doc, setDoc } from 'firebase/firestore/lite'
 import { FirebaseDB } from '../../firebase/config'
+import { fileUpload } from '../../journal/helpers/fileUpload'
 import { loadNotes } from '../../journal/helpers/loadNotes'
-import { addNewEmptyNote, savingNewNote, setActiveNote, setNotes } from './journalSlice'
+import { addNewEmptyNote, savingNewNote, setActiveNote, setNotes, setPhotosToActiveNote, setSaving, updateNote, deleteNoteById } from './journalSlice'
 
 export const startNewNote = () => {
   return async (dispatch, getState) => {
@@ -33,5 +34,45 @@ export const startLoadingNotes = () => {
       throw new Error('El ID del usuario no existe')
     }
     // if (!uid) throw new Error('El ID del usuario no existe')
+  }
+}
+
+export const startSaveNote = () => {
+  return async (dispatch, getState) => {
+    dispatch(setSaving())
+    const { uid } = getState().auth
+    const { active: activeNote } = getState().journal
+    const noteToFirestore = { ...activeNote }
+    delete noteToFirestore.id
+
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${activeNote.id}`)
+    await setDoc(docRef, noteToFirestore, { merge: true })
+    dispatch(updateNote(activeNote))
+  }
+}
+
+export const startUploadingFiles = (files = []) => {
+  return async (dispatch, getState) => {
+    dispatch(setSaving())
+    // await fileUpload(files[0])
+    const fileUploadPromises = []
+    for (const file of files) {
+      fileUploadPromises.push(fileUpload(file))
+    }
+
+    const photosUrl = await Promise.all(fileUploadPromises)
+    dispatch(setPhotosToActiveNote(photosUrl))
+  }
+}
+
+export const startDeletingNote = () => {
+  return async (dispatch, getState) => {
+    const { uid } = getState().auth
+    const { active: note } = getState().journal
+
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`)
+    await deleteDoc(docRef)
+
+    dispatch(deleteNoteById(note.id))
   }
 }
